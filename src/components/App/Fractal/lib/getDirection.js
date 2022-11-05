@@ -2,16 +2,22 @@ const R2D = 180 / Math.PI
 
 
 export default function getDirection(from, to) {
-  if ( !from || !to ) {
-    return
-  }
-
   const dY = to.y - from.y
   const dX = to.x - from .x
-  
+
   const slope = dY / dX
 
-  return atan(slope)
+  const angle = atan(slope)
+
+  if ( dX < 0 ) {
+    if ( dY < 0 ) {
+      return angle - 180
+    }
+
+    return angle + 180
+  }
+
+  return angle
 }
 
 function atan(slope) {
