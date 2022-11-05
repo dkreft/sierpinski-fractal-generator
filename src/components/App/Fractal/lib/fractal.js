@@ -5,174 +5,145 @@ const SIN60 = Math.sqrt(3) / 2
 const D2R = Math.PI / 180
 
 const COLORS = ['#fff', '#f00', '#0f0', '#00f', 'pink', 'cyan', 'violet']
-const LIMIT = Math.pow(2, 10)
+const LIMIT = Math.pow(2, 5) + 7
 
 const LENGTH = 500
+const DIRECTION = 0
+
 
 
 export default function drawFractal(canvas) {
-  const DIRECTION = 0
-
-  //const canvas = document.getElementById('canvas')
-  canvas.width = canvas.offsetWidth
-  canvas.height = canvas.offsetHeight
-
-  let pointNum = 0
-
   const colors = colorGenerator()
 
   const ctx = canvas.getContext('2d')
-  ctx.strokeStyle = '#000'
-  ctx.font = '14px monospace'
-  ctx.translate(canvas.width * 0.3,
-                canvas.height * 0.7)
+
+  ctx.translate(canvas.width * 0.5,
+                canvas.height * 0.5)
 
   const root = buildShape({
-    startX: 0,
-    startY: 0,
-    length: LENGTH,
     direction: DIRECTION,
+    length: LENGTH,
+    startX: -(LENGTH / 2),
+    startY: (LENGTH / 3),
   })
-
-  console.log('root: %o', root)
 
   const shapesToDraw = [root]
 
   let i = 0
 
   do {
-    ++i
-
     ctx.strokeStyle = colors.next().value
 
     const shape = shapesToDraw.shift()
 
-    console.group('SHAPE (%o): %o', ctx.strokeStyle, shape)
+    drawPolygon(ctx, shape)
 
-    drawPolygon(shape)
-    
-    const length = shape.length / 2
-    if ( length < 1 ) {
+    const {
+      length,
+      points,
+    } = shape
+
+    const newLength = length / 2
+    if ( newLength < 2 ) {
       console.warn('new Length too small to render')
       break
     }
-    
-    const {
-      points,
-    } = shape
+
+    ++i
 
     for ( let j = 0; j < points.length; ++j ) {
       const p1 = points[j]
       const p2 = points[j + 1] || points[0]
 
-      const direction = getDirection(p1, p2)
+      const direction = getDirection(p1, p2) - 60
 
       const child = buildShape({
         direction,
-        length,
+        length: newLength,
         startX: p1.x,
         startY: p1.y,
       })
 
       shapesToDraw.push(child)
     }
+  } while ( i <= LIMIT )
+}
 
-    console.groupEnd()
-  } while ( i < LIMIT && i <= shapesToDraw.length )
+function drawPolygon(ctx, { direction, length, points }) {
+  const [start, ...others] = points
 
+  ctx.beginPath()
 
-  //
-  // Functions
-  //
+  ctx.moveTo(start.x, start.y)
 
-  function buildShape({ direction, length, startX, startY }) {
-    console.log('DIRECTION: %o', direction)
-    const p1 = {
+  //  ctx.strokeText(`(${ start.x }, ${ start.y })`, start.x + 20, start.y + 10)
+
+  others.forEach(({ x, y }, i) => {
+    ctx.lineTo(x, y)
+    //ctx.strokeText(`(${ x }, ${ y })`, x + 20, y + 10)
+    ctx.stroke()
+  })
+
+  ctx.lineTo(start.x, start.y)
+
+  ctx.stroke()
+  ctx.closePath()
+}
+
+function* colorGenerator() {
+  let idx = 0
+  while ( 1 ) {
+    yield COLORS[idx]
+
+    ++idx
+
+    if ( idx > COLORS.length - 1 ) {
+      idx = 0
+    }
+  }
+}
+
+function buildShape({ direction, length, startX, startY }) {
+  const points = [
+    {
       x: startX,
       y: startY,
-    }
-
-    const p2 = getNextPoint({
+    },
+    getNextPoint({
       angle: direction,
       length,
       x: startX,
       y: startY,
-    })
-
-    const p3 = getNextPoint({
+    }),
+    getNextPoint({
       angle: direction - 60,
       length,
       x: startX,
       y: startY,
     })
-    
-    const points = [
-      p1,
-      p2,
-      p3,
-    ]
+  ]
 
-    return {
-      length,
-      direction,
-      points,
-    }
+  return {
+    length,
+    points,
   }
+}
 
-  function getNextPoint({ angle, length, x, y }) {
-    return {
-      angle,
-      x: x + length * cos(angle),
-      y: y + length * sin(angle),
-    }
+function getNextPoint({ angle, length, x, y }) {
+  return {
+    x: x + length * cos(angle),
+    y: y + length * sin(angle),
   }
+}
 
-  function drawPolygon({ direction, length, points }) {
-    console.group('drawPolygon(%o)', { direction, length, points })
-    const [start, ...others] = points
-    
-    ctx.beginPath()
+function cos(deg) {
+  return Math.cos(d2r(deg))
+}
 
-    ctx.moveTo(start.x, start.y)
+function sin(deg) {
+  return Math.sin(d2r(deg))
+}
 
-    //  ctx.strokeText(`(${ start.x }, ${ start.y })`, start.x + 20, start.y + 10)
-
-    others.forEach(({ x, y }, i) => {
-      ctx.lineTo(x, y)
-      //ctx.strokeText(`(${ x }, ${ y })`, x + 20, y + 10)
-      ctx.stroke()
-    })
-
-    ctx.lineTo(start.x, start.y)
-    
-    ctx.stroke()
-    ctx.closePath()
-
-    console.groupEnd()
-  }
-
-  function cos(deg) {
-    return Math.cos(d2r(deg))
-  }
-
-  function sin(deg) {
-    return Math.sin(d2r(deg))
-  }
-
-  function d2r(degrees) {
-    return degrees * D2R
-  }
-
-  function* colorGenerator() {
-    let idx = 0
-    while ( 1 ) {
-      yield COLORS[idx]
-
-      ++idx
-
-      if ( idx > COLORS.length - 1 ) {
-        idx = 0
-      }
-    }
-  }
+function d2r(degrees) {
+  return degrees * D2R
 }
