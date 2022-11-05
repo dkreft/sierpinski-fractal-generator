@@ -1,18 +1,11 @@
 import getDirection from './getDirection'
 
-const COS60 = 0.5
-const SIN60 = Math.sqrt(3) / 2
 const D2R = Math.PI / 180
 
 const COLORS = ['#fff', '#f00', '#0f0', '#00f', 'pink', 'cyan', 'violet']
-const LIMIT = Math.pow(2, 5) + 7
-
-const LENGTH = 500
-const DIRECTION = 0
 
 
-
-export default function drawFractal(canvas) {
+export default function drawFractal(canvas, opts = {}) {
   const colors = colorGenerator()
 
   const ctx = canvas.getContext('2d')
@@ -21,10 +14,10 @@ export default function drawFractal(canvas) {
                 canvas.height * 0.5)
 
   const root = buildShape({
-    direction: DIRECTION,
-    length: LENGTH,
-    startX: -(LENGTH / 2),
-    startY: (LENGTH / 3),
+    direction: opts.direction,
+    length: opts.length,
+    startX: -(opts.length / 2),
+    startY: (opts.length / 3),
   })
 
   const shapesToDraw = [root]
@@ -66,7 +59,7 @@ export default function drawFractal(canvas) {
 
       shapesToDraw.push(child)
     }
-  } while ( i <= LIMIT )
+  } while ( i <= opts.limit )
 }
 
 function drawPolygon(ctx, { direction, length, points }) {
