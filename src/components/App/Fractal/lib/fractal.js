@@ -22,12 +22,20 @@ export default function drawFractal(canvas, opts = {}) {
 
   const shapesToDraw = [root]
 
-  let i = 0
+  const lengthColorMap = new Map()
 
   do {
-    ctx.strokeStyle = colors.next().value
-
     const shape = shapesToDraw.shift()
+
+    const color = (function() {
+      if ( !lengthColorMap.has(shape.length) ) {
+        lengthColorMap.set(shape.length, colors.next().value)
+      }
+
+      return lengthColorMap.get(shape.length)
+    })()
+
+    ctx.strokeStyle = color
 
     drawPolygon(ctx, shape)
 
@@ -41,8 +49,6 @@ export default function drawFractal(canvas, opts = {}) {
       console.warn('new Length too small to render')
       break
     }
-
-    ++i
 
     for ( let j = 0; j < points.length; ++j ) {
       const p1 = points[j]
@@ -59,7 +65,7 @@ export default function drawFractal(canvas, opts = {}) {
 
       shapesToDraw.push(child)
     }
-  } while ( i < opts.limit )
+  } while ( lengthColorMap.size < opts.limit )
 }
 
 function drawPolygon(ctx, { direction, length, points }) {
