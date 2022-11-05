@@ -59,7 +59,7 @@ export default function drawFractal(canvas, opts = {}) {
 
       shapesToDraw.push(child)
     }
-  } while ( i <= opts.limit )
+  } while ( i < opts.limit )
 }
 
 function drawPolygon(ctx, { direction, length, points }) {
