@@ -5,13 +5,13 @@ const SIN60 = Math.sqrt(3) / 2
 const D2R = Math.PI / 180
 
 const COLORS = ['#fff', '#f00', '#0f0', '#00f', 'pink', 'cyan', 'violet']
-const LIMIT = 4 //Math.pow(2, 5)
+const LIMIT = Math.pow(2, 10)
 
-const LENGTH = 400
+const LENGTH = 500
 
 
 export default function drawFractal(canvas) {
-  const DIRECTION = 110
+  const DIRECTION = 0
 
   //const canvas = document.getElementById('canvas')
   canvas.width = canvas.offsetWidth
@@ -25,13 +25,9 @@ export default function drawFractal(canvas) {
   ctx.strokeStyle = '#000'
   ctx.font = '14px monospace'
   ctx.translate(canvas.width * 0.3,
-                canvas.height * 0.6)
+                canvas.height * 0.7)
 
   const root = buildShape({
-    bounds: {
-      x: [-canvas.width * 0.5, canvas.width * 0.5],
-      y: [-canvas.width * 0.5, canvas.height * 0.5],
-    },
     startX: 0,
     startY: 0,
     length: LENGTH,
@@ -62,7 +58,6 @@ export default function drawFractal(canvas) {
     }
     
     const {
-      bounds,
       points,
     } = shape
 
@@ -70,10 +65,9 @@ export default function drawFractal(canvas) {
       const p1 = points[j]
       const p2 = points[j + 1] || points[0]
 
-      const direction = getDirection(p2, p1)
+      const direction = getDirection(p1, p2)
 
       const child = buildShape({
-        bounds,
         direction,
         length,
         startX: p1.x,
@@ -91,61 +85,38 @@ export default function drawFractal(canvas) {
   // Functions
   //
 
-  function buildShape({ bounds, direction, length, startX, startY }) {
-    console.group('buildShape(%o)', { bounds })
-
+  function buildShape({ direction, length, startX, startY }) {
     console.log('DIRECTION: %o', direction)
     const p1 = {
       x: startX,
       y: startY,
     }
 
-    // const p2 = getNextPoint({
-    //   angle: direction,
-    //   length,
-    //   x: startX,
-    //   y: startY,
-    // })
-
-    // const p3 = getNextPoint({
-    //   angle: direction - 60,
-    //   length,
-    //   x: startX,
-    //   y: startY,
-    // })
-    
-    const p2 = getPointWithinBounds({
+    const p2 = getNextPoint({
       angle: direction,
-      bounds,
       length,
-      startX,
-      startY,
-    })
-    
-    const p3 = getPointWithinBounds({
-      angle: direction - 60,
-      bounds,
-      length,
-      startX,
-      startY,
+      x: startX,
+      y: startY,
     })
 
+    const p3 = getNextPoint({
+      angle: direction - 60,
+      length,
+      x: startX,
+      y: startY,
+    })
+    
     const points = [
       p1,
       p2,
       p3,
     ]
-    console.log('points: %o', points)
-    const shape = {
+
+    return {
       length,
       direction,
-      bounds: getBounds(points),
       points,
     }
-
-    console.log('shape: %o', shape)
-    console.groupEnd()
-    return shape
   }
 
   function getNextPoint({ angle, length, x, y }) {
@@ -153,55 +124,6 @@ export default function drawFractal(canvas) {
       angle,
       x: x + length * cos(angle),
       y: y + length * sin(angle),
-    }
-  }
-
-  function getPointWithinBounds({ angle, bounds, length, startX, startY }) {
-    const x = getCoordValue({
-      bounds: bounds.x,
-      length: length * cos(angle),
-      start: startX,
-    })
-    
-    const y = getCoordValue({
-      bounds: bounds.y,
-      length: length * sin(angle),
-      start: startY,
-    })
-    
-    return { x, y }
-  }
-
-  function getCoordValue({ bounds, length, start }) {
-    const finalValue = start + length
-
-    console.log('getCoordValue: %o < %o || %o > %o',
-                finalValue,
-                bounds[0],
-                finalValue,
-                bounds[1])
-    
-    if ( finalValue < bounds[0] || finalValue > bounds[1] ) {
-      console.log('subtracting %o - %o', start, length)
-      return start - length
-    }
-
-    return finalValue
-  }
-
-  function getBounds(points) {
-    const xValues = points.map(({ x }) => x)
-    const yValues = points.map(({ y }) => y)
-
-    return {
-      x: [
-        Math.min(...xValues),
-        Math.max(...xValues),
-      ],
-      y: [
-        Math.min(...yValues),
-        Math.max(...yValues),
-      ],
     }
   }
 
