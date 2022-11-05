@@ -1,29 +1,29 @@
 import React, {
-  useLayoutEffect,
+  useEffect,
   useRef,
 } from 'react'
-
-import PropTypes from 'prop-types'
 
 import drawFractal from './lib/fractal'
 
 import Styles from './styles.module.sass'
 
 
-export default function Fractal({}) {
+export default function Fractal() {
   const ref = useRef()
 
-  useLayoutEffect(() => {
-    drawFractal(ref.current)
+  useEffect(() => {
+    const canvas = ref.current
+
+    canvas.width = canvas.offsetWidth
+    canvas.height = canvas.offsetHeight
+
+    drawFractal(canvas)
   }, [])
-  
+
   return (
     <canvas
       className={ Styles.root }
       ref={ ref }
     />
   )
-}
-
-Fractal.propTypes = {
 }
