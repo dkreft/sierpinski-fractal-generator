@@ -3,6 +3,8 @@ import React, {
   useRef,
 } from 'react'
 
+import useSize from '@react-hook/size'
+
 import drawFractal from './lib/fractal'
 
 import Styles from './styles.module.sass'
@@ -12,14 +14,15 @@ const LENGTH = 500
 const LIMIT = Math.pow(2, 5) + 7
 
 
-
 export default function Fractal() {
   const ref = useRef()
 
+  const canvasSize = useSize(ref)
+
   useEffect(() => {
     const canvas = ref.current
-    canvas.width = canvas.offsetWidth
-    canvas.height = canvas.offsetHeight
+    canvas.width = canvasSize[0]
+    canvas.height = canvasSize[1]
 
     const params = new URLSearchParams(window.location.search)
 
@@ -28,7 +31,7 @@ export default function Fractal() {
       length: Number(params.get('length') || LENGTH),
       limit: Number(params.get('limit') || LIMIT),
     })
-  }, [])
+  }, [canvasSize])
 
   return (
     <canvas
