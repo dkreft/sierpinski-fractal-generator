@@ -42,6 +42,7 @@ export default function Controls({ handleChange, state }) {
         type="number"
         name="limit"
         defaultValue={ state.limit }
+        min="1"
       />
       <br />
       Length:

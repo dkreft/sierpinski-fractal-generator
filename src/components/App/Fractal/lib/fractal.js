@@ -2,17 +2,15 @@ import getDirection from './getDirection'
 
 const D2R = Math.PI / 180
 
-const COLORS = ['black'] //, 'red', 'orange', 'yellow', 'green', 'cyan', 'violet', 'cyan', 'violet']
-const MIN_SIDE_LEGNTH = 1.5
+const MIN_SIDE_LENGTH = 1.5
+const STROKE_COLOR = '#000'
 
 
 export default function drawFractal(canvas, opts = {}) {
-  const colors = colorGenerator()
-
   const ratio = Math.min(0.999, opts.ratio)
 
   const ctx = canvas.getContext('2d')
-  ctx.fillStyle = '#fff' //'#242424'
+  ctx.fillStyle = '#fff'
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.translate(canvas.width * 0.5,
@@ -27,22 +25,18 @@ export default function drawFractal(canvas, opts = {}) {
 
   const shapesToDraw = [root]
 
-  const lengthColorMap = new Map()
+  const lengths = new Set()
 
   while ( shapesToDraw.length ) {
     const shape = shapesToDraw.shift()
 
-    const color = (function() {
-      if ( !lengthColorMap.has(shape.length) ) {
-        lengthColorMap.set(shape.length, colors.next().value)
-      }
+    lengths.add(shape.length)
 
-      return lengthColorMap.get(shape.length)
-    })()
+    drawPolygon(ctx, shape, STROKE_COLOR)
 
-    ctx.strokeStyle = color
-
-    drawPolygon(ctx, shape)
+    if ( lengths.size >= opts.limit ) {
+      continue
+    }
 
     const {
       length,
@@ -53,10 +47,6 @@ export default function drawFractal(canvas, opts = {}) {
 
     if ( newLength < MIN_SIDE_LENGTH ) {
       console.warn('new Length too small to render')
-      break
-    }
-
-    if ( lengthColorMap.size >= opts.limit ) {
       continue
     }
 
@@ -78,10 +68,11 @@ export default function drawFractal(canvas, opts = {}) {
   }
 }
 
-function drawPolygon(ctx, { direction, length, points }) {
+function drawPolygon(ctx, { direction, length, points }, strokeColor) {
   const [start, ...others] = points
 
   ctx.beginPath()
+  ctx.strokeStyle = strokeColor
   ctx.fillStyle = `rgba(0, 0, 0, 0.15)`
   ctx.moveTo(start.x, start.y)
 
@@ -93,19 +84,6 @@ function drawPolygon(ctx, { direction, length, points }) {
   ctx.closePath()
   ctx.fill()
   ctx.stroke()
-}
-
-function* colorGenerator() {
-  let idx = 0
-  while ( 1 ) {
-    yield COLORS[idx]
-
-    ++idx
-
-    if ( idx > COLORS.length - 1 ) {
-      idx = 0
-    }
-  }
 }
 
 function buildShape({ direction, length, startX, startY }) {
