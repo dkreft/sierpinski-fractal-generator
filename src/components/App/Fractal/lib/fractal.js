@@ -2,30 +2,29 @@ import getDirection from './getDirection'
 
 const D2R = Math.PI / 180
 
+const CANVAS_BACKGROUND_COLOR = '#fff'
 const MIN_SIDE_LENGTH = 1.5
+const SHAPE_FILL_COLOR = 'rgba(0, 0, 0, 0.15)'
 const STROKE_COLOR = '#000'
 
 
 export default function drawFractal(canvas, opts = {}) {
   const ratio = Math.min(0.999, opts.ratio)
 
-  const ctx = canvas.getContext('2d')
-  ctx.fillStyle = '#fff'
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const ctx = makeContext(canvas)
 
   ctx.translate(canvas.width * 0.5,
                 canvas.height * 0.5)
 
-  const root = buildShape({
-    direction: opts.direction,
-    length: opts.length,
-    startX: -(opts.length / 2),
-    startY: (opts.length / 3),
-  })
-
-  const shapesToDraw = [root]
-
   const lengths = new Set()
+
+  const shapesToDraw = [
+    buildShape({
+      length: opts.length,
+      startX: -(opts.length / 2),
+      startY: (opts.length / 3),
+    })
+  ]
 
   while ( shapesToDraw.length ) {
     const shape = shapesToDraw.shift()
@@ -68,12 +67,21 @@ export default function drawFractal(canvas, opts = {}) {
   }
 }
 
+function makeContext(canvas) {
+  const ctx = canvas.getContext('2d')
+
+  ctx.fillStyle = CANVAS_BACKGROUND_COLOR
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  return ctx
+}
+
 function drawPolygon(ctx, { direction, length, points }, strokeColor) {
   const [start, ...others] = points
 
   ctx.beginPath()
   ctx.strokeStyle = strokeColor
-  ctx.fillStyle = `rgba(0, 0, 0, 0.15)`
+  ctx.fillStyle = SHAPE_FILL_COLOR
   ctx.moveTo(start.x, start.y)
 
   others.forEach(({ x, y }, i) => {
@@ -86,7 +94,7 @@ function drawPolygon(ctx, { direction, length, points }, strokeColor) {
   ctx.stroke()
 }
 
-function buildShape({ direction, length, startX, startY }) {
+function buildShape({ direction = 0, length, startX, startY }) {
   const points = [
     {
       x: startX,
