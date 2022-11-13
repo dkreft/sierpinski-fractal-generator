@@ -20,40 +20,52 @@ export default function Controls({ handleChange, state }) {
   
   return (
     <div className={ Styles.root }>
-      Angle:
+      <span className={ Styles.label }>
+        Angle:
+      </span>
       <input
-        onChange={ onChange }
-        type="number"
-        name="shiftAngle"
+        className={ Styles.input }
         defaultValue={ state.shiftAngle }
-      />
-      <br />
-      Limit:
-      <input
+        name="shiftAngle"
         onChange={ onChange }
         type="number"
-        name="limit"
+      />
+
+      <span className={ Styles.label }>
+        Limit:
+      </span>
+      <input
+        className={ Styles.input }
         defaultValue={ state.limit }
         min="1"
-      />
-      <br />
-      Length:
-      <input
+        name="limit"
         onChange={ onChange }
         type="number"
-        name="length"
+      />
+
+      <span className={ Styles.label }>
+        Length:
+      </span>
+      <input
+        className={ Styles.input }
         defaultValue={ state.length }
-        step={ 10 }
-      />
-      <br/>
-      Ratio:
-      <input
+        name="length"
         onChange={ onChange }
+        step={ 10 }
         type="number"
-        name="ratio"
+      />
+
+      <span className={ Styles.label }>
+        Ratio:
+      </span>
+      <input
+        className={ Styles.input }
         defaultValue={ state.ratio }
-        step={ 0.01 }
         max={ 0.99 }
+        name="ratio"
+        onChange={ onChange }
+        step={ 0.01 }
+        type="number"
       />
     </div>
   )

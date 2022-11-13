@@ -25,6 +25,7 @@ export default function Fractal(props) {
 
   useEffect(() => {
     const canvas = ref.current
+
     canvas.width = canvasSize[0]
     canvas.height = canvasSize[1]
 
