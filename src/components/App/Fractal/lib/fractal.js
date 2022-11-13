@@ -2,13 +2,18 @@ import getDirection from './getDirection'
 
 const D2R = Math.PI / 180
 
-const COLORS = ['#fff', '#f00', '#0f0', '#00f', 'pink', 'cyan', 'violet']
+const COLORS = ['black'] //, 'red', 'orange', 'yellow', 'green', 'cyan', 'violet', 'cyan', 'violet']
+const MIN_SIDE_LEGNTH = 1.5
 
 
 export default function drawFractal(canvas, opts = {}) {
   const colors = colorGenerator()
 
+  const ratio = Math.min(0.999, opts.ratio)
+
   const ctx = canvas.getContext('2d')
+  ctx.fillStyle = '#fff' //'#242424'
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.translate(canvas.width * 0.5,
                 canvas.height * 0.5)
@@ -24,7 +29,7 @@ export default function drawFractal(canvas, opts = {}) {
 
   const lengthColorMap = new Map()
 
-  do {
+  while ( shapesToDraw.length ) {
     const shape = shapesToDraw.shift()
 
     const color = (function() {
@@ -44,17 +49,22 @@ export default function drawFractal(canvas, opts = {}) {
       points,
     } = shape
 
-    const newLength = length / 2
-    if ( newLength < 2 ) {
+    const newLength = length * ratio
+
+    if ( newLength < MIN_SIDE_LENGTH ) {
       console.warn('new Length too small to render')
       break
+    }
+
+    if ( lengthColorMap.size >= opts.limit ) {
+      continue
     }
 
     for ( let j = 0; j < points.length; ++j ) {
       const p1 = points[j]
       const p2 = points[j + 1] || points[0]
 
-      const direction = getDirection(p1, p2) - 60
+      const direction = getDirection(p1, p2) - opts.shiftAngle
 
       const child = buildShape({
         direction,
@@ -65,28 +75,24 @@ export default function drawFractal(canvas, opts = {}) {
 
       shapesToDraw.push(child)
     }
-  } while ( lengthColorMap.size < opts.limit )
+  }
 }
 
 function drawPolygon(ctx, { direction, length, points }) {
   const [start, ...others] = points
 
   ctx.beginPath()
-
+  ctx.fillStyle = `rgba(0, 0, 0, 0.15)`
   ctx.moveTo(start.x, start.y)
-
-  //  ctx.strokeText(`(${ start.x }, ${ start.y })`, start.x + 20, start.y + 10)
 
   others.forEach(({ x, y }, i) => {
     ctx.lineTo(x, y)
-    //ctx.strokeText(`(${ x }, ${ y })`, x + 20, y + 10)
     ctx.stroke()
   })
 
-  ctx.lineTo(start.x, start.y)
-
-  ctx.stroke()
   ctx.closePath()
+  ctx.fill()
+  ctx.stroke()
 }
 
 function* colorGenerator() {

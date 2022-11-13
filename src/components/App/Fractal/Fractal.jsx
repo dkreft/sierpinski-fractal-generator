@@ -9,12 +9,16 @@ import drawFractal from './lib/fractal'
 
 import Styles from './styles.module.sass'
 
-const DIRECTION = 0
-const LENGTH = 500
-const LIMIT = Math.pow(2, 5) + 7
 
-
-export default function Fractal() {
+export default function Fractal(props) {
+  const {
+    direction,
+    length,
+    limit,
+    ratio,
+    shiftAngle,
+  } = props
+  
   const ref = useRef()
 
   const canvasSize = useSize(ref)
@@ -24,14 +28,8 @@ export default function Fractal() {
     canvas.width = canvasSize[0]
     canvas.height = canvasSize[1]
 
-    const params = new URLSearchParams(window.location.search)
-
-    drawFractal(canvas, {
-      direction: Number(params.get('direction') || DIRECTION),
-      length: Number(params.get('length') || LENGTH),
-      limit: Number(params.get('limit') || LIMIT),
-    })
-  }, [canvasSize])
+    drawFractal(canvas, props)
+  }, [canvasSize, props])
 
   return (
     <canvas
