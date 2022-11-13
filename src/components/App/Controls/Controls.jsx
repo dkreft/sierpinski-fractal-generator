@@ -28,14 +28,6 @@ export default function Controls({ handleChange, state }) {
         defaultValue={ state.shiftAngle }
       />
       <br />
-      Direction:
-      <input
-        onChange={ onChange }
-        type="number"
-        name="direction"
-        defaultValue={ state.direction }
-      />
-      <br />
       Limit:
       <input
         onChange={ onChange }
