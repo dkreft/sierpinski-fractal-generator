@@ -79,17 +79,19 @@ function makeContext(canvas) {
 function drawPolygon(ctx, { direction, length, points }, strokeColor) {
   const [start, ...others] = points
 
-  ctx.beginPath()
   ctx.strokeStyle = strokeColor
   ctx.fillStyle = SHAPE_FILL_COLOR
+
+  ctx.beginPath()
   ctx.moveTo(start.x, start.y)
 
-  others.forEach(({ x, y }, i) => {
+  others.forEach(({ x, y }) => {
     ctx.lineTo(x, y)
     ctx.stroke()
   })
 
   ctx.closePath()
+
   ctx.fill()
   ctx.stroke()
 }
