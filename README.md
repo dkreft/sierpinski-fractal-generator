@@ -30,4 +30,4 @@ To get a local copy up and running follow these simple example steps.
 
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the MIT License.
