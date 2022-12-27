@@ -15,18 +15,15 @@ To get a local copy up and running follow these simple example steps.
 
 ### Installation
 
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
-
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
    ```sh
    git clone git@github.com:dkreft/sierpinski-fractal-generator.git
    ```
-3. Install dependencies
+2. Install dependencies
    ```sh
    yarn
    ```
-4. Run the development server
+3. Run the development server
    ```js
    yarn dev
    ```
@@ -34,5 +31,3 @@ _Below is an example of how you can instruct your audience on installing and set
 ## License
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
-
-[screenshot]: public/screenshot.png
