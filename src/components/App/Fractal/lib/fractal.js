@@ -26,12 +26,14 @@ export default function drawFractal(canvas, opts = {}) {
     })
   ]
 
+  let count = 0
   while ( shapesToDraw.length ) {
     const shape = shapesToDraw.shift()
 
     lengths.add(shape.length)
 
     drawPolygon(ctx, shape, STROKE_COLOR)
+    ++count
 
     if ( lengths.size >= opts.limit ) {
       continue
@@ -65,6 +67,9 @@ export default function drawFractal(canvas, opts = {}) {
       shapesToDraw.push(child)
     }
   }
+
+  console.log('Shapes drawn: %o', count)
+  return count
 }
 
 function makeContext(canvas) {

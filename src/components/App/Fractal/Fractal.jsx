@@ -11,14 +11,6 @@ import Styles from './styles.module.sass'
 
 
 export default function Fractal(props) {
-  const {
-    direction,
-    length,
-    limit,
-    ratio,
-    shiftAngle,
-  } = props
-  
   const ref = useRef()
 
   const canvasSize = useSize(ref)
